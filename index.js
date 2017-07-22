@@ -278,16 +278,6 @@ const util = require('util');
  * xml2js function wrapper/helper to have convenient access to the XML interface
  *
  */
-function testStationFromUserInput(stationName) {
-    var parseString = require('xml2js').parseString;
-    var xml = '<?xml version="1.0" encoding="UTF-8"?> <Trias version="1.1" xmlns="http://www.vdv.de/trias" xmlns:siri="http://www.siri.org.uk/siri"> <ServiceRequest> <siri:RequestTimestamp>2015-11-09T14:09:00+01:00</siri:RequestTimestamp> <siri:RequestorRef>vrs</siri:RequestorRef> <RequestPayload> <StopEventRequest> <Location> <LocationRef> <StopPlaceRef>de:05315:13411</StopPlaceRef> <LocationName> <Text/> </LocationName> </LocationRef> <DepArrTime>2017-07-21T15:18:40+02:00</DepArrTime> </Location> <Params> <PtModeFilter> <Exclude>false</Exclude> <PtMode>all</PtMode> </PtModeFilter> <TimeWindow>PT1H</TimeWindow> <IncludeRealtimeData>true</IncludeRealtimeData> <NumberOfResults>6</NumberOfResults> </Params> </StopEventRequest> </RequestPayload> </ServiceRequest> </Trias>';
-    var resultString = 'no xml';
-    parseString(xml, function (err, result) {
-        console.log(util.inspect(result, false, null))
-        resultString = result;
-    });
-    return resultString;
-}
 
 function loadStationFromUserInput(stationName, callback) {
 
