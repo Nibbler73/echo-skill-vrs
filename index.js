@@ -190,10 +190,10 @@ var handlers = {
      *
      */
     'AMAZON.HelpIntent': function() {
-        var help = "Abfahrtspläne für den V.R.S., z.B. die Abfahrten der Haltestellen in Köln. "
-                + "Wenn Du Deine Haltestelle ändern möchtest, sage: ich bin umgezogen. "
-                + "Wenn Du wissen möchtest, zu welcher Haltestelle ich die Abfahrtzeiten abrufe, sage: wo bist Du? "
-                + ""
+        var help = "Ich sage Dir die Abfahrtspläne für den V.R.S., zum Beispiel die Abfahrten einer Haltestelle in Deiner Nähe. "
+                + "Um jetzt die Abfahrtszeiten zu hören, sage: Abfahrtszeiten."
+                + "Wenn Du Deine Haltestelle ändern möchtest, sage: ändern. "
+                + "Du kannst mich auch direkt bei Aufruf steuen. Sage einfach: Alexa, starte Haltestelle. Dann sage ich direkt alle Abfahrten Deiner Haltestelle auf. "
                 + "";
         if(null !== currentIntentSlot) {
             var helpSlot = helpSlotHelp[currentIntentSlot];
