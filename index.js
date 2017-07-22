@@ -4,11 +4,11 @@
 // You can copy and paste the entire file contents as the code for a new Lambda function,
 //  or copy & paste section #3, the helper function, to the bottom of your existing Lambda code.
 
-// TODO:
-// - Confirm Save
-// - Help Should emit Back to initial Intent (Continue Dialog)
-// - Add propper Timezone to JS Date objects
-// - Add Card to Alexa App with departure times
+// 
+// TODO: Confirm Save
+// TODO: Help Should emit Back to initial Intent (Continue Dialog)
+// TODO: Add propper Timezone to JS Date objects
+// TODO: Add Card to Alexa App with departure times
 
 // 1. Text strings =====================================================================================================
 //    Modify these strings and messages to change the behavior of your Lambda function
@@ -17,7 +17,7 @@ var limitToLine = 0;
 var currentIntentSlot;
 var helpSlotHelp = {
     'STATION': 'Sage mir den Namen der Station, zu der Du die Abfahrtszeiten hören möchtest.',
-    'LINIE': 'Sage mir die Linit, zu der Du die Abfahrtszeiten hören möchtest.',
+    'LINIE': 'Sage mir die Linie, zu der Du die Abfahrtszeiten hören möchtest.',
 }
 // TODO: This is for the Testing-Service only
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
