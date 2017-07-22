@@ -8,6 +8,7 @@
 // - Confirm Save
 // - Help Should emit Back to initial Intent (Continue Dialog)
 // - Add propper Timezone to JS Date objects
+// - Add Card to Alexa App with departure times
 
 // 1. Text strings =====================================================================================================
 //    Modify these strings and messages to change the behavior of your Lambda function
