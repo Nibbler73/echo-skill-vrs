@@ -81,7 +81,7 @@ var handlers = {
     				    // Calculate minutes till departure
                         var minutes = Math.round( (estimatedTime.getTime() / 1000 - currentTime) / 60 );
         				if (minutes >= 0 && ( limitToLine===0 || limitToLine == line )) {
-        				    speech += separator + '<emphasis>' + line + '</emphasis> nach ' + direction + (minutes < 1 ? ' sofort' : ' in <say-as interpret-as="time">' + minutes + '\'</say-as>');
+        				    speech += separator + '<emphasis>' + line + '</emphasis> nach ' + direction + (minutes < 1 ? ' sofort' : ' in <say-as interpret-as="time">' + minutes + '\'0"</say-as>');
         				    separator = ', ';
         				    lineCounter++;
         				}
