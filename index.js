@@ -81,7 +81,7 @@ var handlers = {
     				    // Calculate minutes till departure
                         var minutes = Math.round( (estimatedTime.getTime() / 1000 - currentTime) / 60 );
         				if (minutes >= 0 && ( limitToLine===0 || limitToLine == line )) {
-        				    speech += separator + line + ' nach ' + direction + (minutes < 1 ? ' sofort' : ' in ' + minutes + ' Min.');
+        				    speech += separator + '<emphasis>' + line + '</emphasis> nach ' + direction + (minutes < 1 ? ' sofort' : ' in <say-as interpret-as="time">' + minutes + '\'</say-as>');
         				    separator = ', ';
         				    lineCounter++;
         				}
@@ -89,18 +89,18 @@ var handlers = {
         			if(lineCounter===0) {
         			    speech = 'In der kommenden Stunde fahren keine Bahnen oder Busse.';
         			    if(limitToLine>0) {
-        			        speech += ' Beschränkung auf Linie ' + limitToLine;
+        			        speech += ' Beschränkung auf Linie <emphasis>' + limitToLine + '</emphasis>';
         			    }
         			}
                 } else {
-                    speech = 'Zu Haltestelle ' + this.attributes['DefaultStationName'] + ' kann ich keine Abfahrten finden.';
+                    speech = 'Zu Haltestelle <emphasis level="strong">' + this.attributes['DefaultStationName'] + '</emphasis> kann ich keine Abfahrten finden.';
                 }
     			var definedStationTimeDelta = currentTime - this.attributes['DefaultStationDefinitionTime'];
     			if(definedStationTimeDelta < 100) {
     			    // Prefix station name before lines, as is't a freshly changed station
     			    speech = 'Abfahrten von ' + this.attributes['DefaultStationName'] + ': ' + speech;
     			} else {
-    			    speech = speech + '. Das waren Abfahrten von ' + this.attributes['DefaultStationName'];
+    			    speech = speech + '<break strength="strong"/> Das waren Abfahrten von ' + this.attributes['DefaultStationName'];
     			}
 
                 this.emit(':tell', speech );
@@ -182,7 +182,22 @@ var handlers = {
      *
      */
     'SayStationIntent': function () {
-        this.emit(':tell', 'Deine Haltestelle lautet: ' + this.attributes['DefaultStationName'] + '.' );
+        var defaultStationDefinitionDateString = this.attributes['DefaultStationDefinitionTime'];
+        var askDate = '';
+        if(undefined !== defaultStationDefinitionDateString) {
+            var defaultStationDefinitionDateInt = parseInt(defaultStationDefinitionDateString);
+            var defaultStationDefinitionDate = new Date(defaultStationDefinitionDateInt * 1000);
+            var currentDate = new Date();
+
+            askDate = '????';
+            if(defaultStationDefinitionDate.getYear() < currentDate.getYear()) {
+                askDate = defaultStationDefinitionDate.getFullYear().toString();
+            }
+            askDate += ('0' + (defaultStationDefinitionDate.getMonth() + 1)).slice(-2) + ('0' + defaultStationDefinitionDate.getDate()).slice(-2);
+            // Make it a proper announcement
+            askDate = ' Das hast Du am <say-as interpret-as="date">' + askDate + '</say-as> so festgelegt.';
+        }
+        this.emit(':tell', 'Deine Haltestelle lautet: ' + this.attributes['DefaultStationName'] + '.' + askDate );
     },
 
 
