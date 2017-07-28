@@ -19,13 +19,12 @@ var helpSlotHelp = {
     'STATION': 'Sage mir den Namen der Station, zu der Du die Abfahrtszeiten hören möchtest.',
     'LINIE': 'Sage mir die Linie, zu der Du die Abfahrtszeiten hören möchtest.',
 }
-// TODO: This is for the Testing-Service only
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
 // 2. Skill Code =======================================================================================================
 
-var Alexa = require('alexa-sdk');
+var Alexa = require('alexa-sdk'),
+    _ = require('lodash');
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
@@ -67,15 +66,14 @@ var handlers = {
                 var speech = 'Linie ';
                 var separator = '';
                 var lineCounter=0;
-                var stopEventList = data.Trias.ServiceDelivery[0].DeliveryPayload[0].StopEventResponse[0].StopEventResult;
+                var stopEventList = _.get(data, 'Trias.ServiceDelivery[0].DeliveryPayload[0].StopEventResponse[0].StopEventResult');
                 if(stopEventList instanceof Array) {
                     stopEventList.forEach(function(stopEvent) {
-                        var line = stopEvent.StopEvent[0].Service[0].PublishedLineName[0].Text[0];
-                        var direction = stopEvent.StopEvent[0].Service[0].DestinationText[0].Text[0];
-                        var ServiceDeparture = stopEvent.StopEvent[0].ThisCall[0].CallAtStop[0].ServiceDeparture[0];
-                        var estimatedTimeString = ServiceDeparture.TimetabledTime[0];
-                        if(undefined !== ServiceDeparture.EstimatedTime) {
-                            estimatedTimeString = ServiceDeparture.EstimatedTime[0];
+                        var line = _.get(stopEvent, 'StopEvent[0].Service[0].PublishedLineName[0].Text[0]', 'unbekannt');
+                        var direction = _.get(stopEvent, 'StopEvent[0].Service[0].DestinationText[0].Text[0]', 'unbekannt');
+                        var estimatedTimeString = _.get(stopEvent, 'StopEvent[0].ThisCall[0].CallAtStop[0].ServiceDeparture[0].EstimatedTime[0]');
+                        if(undefined === estimatedTimeString) {
+                            estimatedTimeString = _.get(stopEvent, 'StopEvent[0].ThisCall[0].CallAtStop[0].ServiceDeparture[0].TimetabledTime[0]');
                         }
                         var estimatedTime = new Date(estimatedTimeString);
     				    // Calculate minutes till departure
@@ -96,7 +94,7 @@ var handlers = {
                     speech = 'Zu Haltestelle <emphasis level="strong">' + this.attributes['DefaultStationName'] + '</emphasis> kann ich keine Abfahrten finden.';
                 }
     			var definedStationTimeDelta = currentTime - this.attributes['DefaultStationDefinitionTime'];
-    			if(definedStationTimeDelta < 100) {
+    			if(definedStationTimeDelta < 300) {
     			    // Prefix station name before lines, as is't a freshly changed station
     			    speech = 'Abfahrten von ' + this.attributes['DefaultStationName'] + ': ' + speech;
     			} else {
@@ -142,8 +140,8 @@ var handlers = {
             console.log('* StationName: ' + stationName);
             // Lookup Station Name and ID with VRS
             loadStationFromUserInput(stationName, (data) => {
-                var canonicalStationId = data.Trias.ServiceDelivery[0].DeliveryPayload[0].LocationInformationResponse[0].Location[0].Location[0].StopPlace[0].StopPlaceRef[0];
-                var canonicalStationName = data.Trias.ServiceDelivery[0].DeliveryPayload[0].LocationInformationResponse[0].Location[0].Location[0].LocationName[0].Text[0];
+                var canonicalStationId = _.get(data, 'Trias.ServiceDelivery[0].DeliveryPayload[0].LocationInformationResponse[0].Location[0].Location[0].StopPlace[0].StopPlaceRef[0]');
+                var canonicalStationName = _.get(data, 'Trias.ServiceDelivery[0].DeliveryPayload[0].LocationInformationResponse[0].Location[0].Location[0].LocationName[0].Text[0]');
                 console.log('** StationId: ' + canonicalStationId);
                 console.log('** StationName: ' + canonicalStationName);
 
@@ -248,7 +246,10 @@ function httpsPost(postData, callback) {
         headers: {
             'Content-Type': 'application/xml',
             'Content-Length': Buffer.byteLength(postData)
-        }
+        },
+        key: fs.readFileSync('vrsApi.pem'),
+        cert: fs.readFileSync('vrsApi.pem'),
+        ca: fs.readFileSync('vrsApi.pem')
     };
 
     var post_req = https.request(post_options, res => {
@@ -288,7 +289,6 @@ function httpsPost(postData, callback) {
 
 var fs = require('fs'),
     xml2js = require('xml2js');
-const util = require('util');
 /*
  * xml2js function wrapper/helper to have convenient access to the XML interface
  *
@@ -328,5 +328,5 @@ function loadDeparturesForStation(stationId, callback) {
  *
  */
 function getListOfStationsFromLocationInformationRequest(data) {
-    var stopEventList = data.Trias.ServiceDelivery[0].StopEventResponse[0].StopEventResult;
+    var stopEventList = _.get(data, 'Trias.ServiceDelivery[0].StopEventResponse[0].StopEventResult[0]');
 }
