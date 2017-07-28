@@ -1,0 +1,16 @@
+{
+  "name": "VrsLookup",
+  "version": "1.0.0",
+  "description": "lookup VRS departures",
+  "main": "index.js",
+  "author": "Hrvoje Husic",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "alexa-sdk": "",
+    "https": "",
+    "xml2js": "",
+    "lodash": "",
+    "fs": ""
+  }
+}
