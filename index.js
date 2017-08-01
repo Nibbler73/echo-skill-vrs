@@ -44,13 +44,6 @@ var handlers = {
     /*
      *
      */
-    'TestIntent': function () {
-        this.emit('ListStationsIntent');
-    },
-
-    /*
-     *
-     */
     'ListStationsIntent': function () {
 
         var defaultStationId = this.attributes['DefaultStationId'];
