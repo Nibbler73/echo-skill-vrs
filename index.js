@@ -38,7 +38,12 @@ exports.handler = function(event, context, callback) {
 
 var handlers = {
     'LaunchRequest': function () {
-        this.emit('ListStationsIntent');
+        var defaultStationId = this.attributes['DefaultStationId'];
+        if(undefined !== defaultStationId) {
+            this.emit('ListStationsIntent');
+        } else {
+            this.emit('RequestConfigurationIntent');
+        }
     },
 
     /*
@@ -98,7 +103,7 @@ var handlers = {
     
             } );
         } else {
-            this.emit('ConfigureStationIntent');
+            this.emit('RequestConfigurationIntent');
         }
 
     },
@@ -107,6 +112,13 @@ var handlers = {
     /*
      *
      */
+    'RequestConfigurationIntent': function () {
+        // We COULD emit to ConfigureStationIntent, but Alexa does not know about the slots then.
+        // So we need to talk the user into verbally requesting ConfigureStationIntent
+        var speechOutput = 'Du hast noch keine Haltestelle festgelegt. Um jetzt eine Haltestelle festzulegen, sage <emphasis>festlegen</emphasis>.';
+        var repromptSpeech = speechOutput;
+        this.emit(':ask', speechOutput, repromptSpeech);
+    },
     'ConfirmSaveIntent': function () {
         this.emit(':saveState', true);
 
@@ -122,14 +134,17 @@ var handlers = {
             // you have defaults, then emit :delegate with this updated intent.
             // No Default values: updatedIntent.slots.SlotName.value = 'DefaultValue';
             this.emit(':delegate', updatedIntent);
-        } else if (this.event.request.dialogState !== 'COMPLETED'){
+        } else if (this.event.request.dialogState === 'IN_PROGRESS'){
             this.emit(':delegate');
+        } else if (undefined === _.get(this.event, 'request.intent.slots.STATION.value')){
+            // Something wired is going on, so talk the user into requesting configuration
+            this.emit('RequestConfigurationIntent');
         } else {
             // Indicate no slot to HelpIntent
             currentIntentSlot = null;
             // All the slots are filled (And confirmed if you choose to confirm slot/intent)
             // Store Station Name
-            var stationName = this.event.request.intent.slots.STATION.value;
+            var stationName = _.get(this.event, 'request.intent.slots.STATION.value', 'unbekannt');
             console.log('* StationName: ' + stationName);
             // Lookup Station Name and ID with VRS
             loadStationFromUserInput(stationName, (data) => {
