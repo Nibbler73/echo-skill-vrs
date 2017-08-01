@@ -70,7 +70,7 @@ var handlers = {
                 if(stopEventList instanceof Array) {
                     stopEventList.forEach(function(stopEvent) {
                         var line = _.get(stopEvent, 'StopEvent[0].Service[0].PublishedLineName[0].Text[0]', 'unbekannt');
-                        var direction = _.get(stopEvent, 'StopEvent[0].Service[0].DestinationText[0].Text[0]', 'unbekannt');
+                        var direction = _.replace( _.get(stopEvent, 'StopEvent[0].Service[0].DestinationText[0].Text[0]', 'unbekannt'), "str.", " straße ");
                         var estimatedTimeString = _.get(stopEvent, 'StopEvent[0].ThisCall[0].CallAtStop[0].ServiceDeparture[0].EstimatedTime[0]');
                         if(undefined === estimatedTimeString) {
                             estimatedTimeString = _.get(stopEvent, 'StopEvent[0].ThisCall[0].CallAtStop[0].ServiceDeparture[0].TimetabledTime[0]');
