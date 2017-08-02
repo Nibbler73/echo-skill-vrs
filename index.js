@@ -13,7 +13,6 @@
 // 1. Text strings =====================================================================================================
 //    Modify these strings and messages to change the behavior of your Lambda function
 
-var limitToLine = 0;
 var currentIntentSlot;
 var helpSlotHelp = {
     'STATION': 'Sage mir den Namen der Station, zu der Du die Abfahrtszeiten hören möchtest.',
@@ -60,6 +59,8 @@ var handlers = {
                 this.attributes['UsageCount'] = 0;
             }
             this.attributes['UsageCount'] += 1;
+            var limitToLine = this.attributes['LimitToLine'];
+            this.attributes['LimitToLine'] = undefined;
             loadDeparturesForStation(defaultStationId,  (data) => {
                 var speech = 'Linie ';
                 var separator = '';
@@ -76,7 +77,7 @@ var handlers = {
                         var estimatedTime = new Date(estimatedTimeString);
     				    // Calculate minutes till departure
                         var minutes = Math.round( (estimatedTime.getTime() / 1000 - currentTime) / 60 );
-        				if (minutes >= 0 && ( limitToLine===0 || limitToLine == line )) {
+        				if (minutes >= 0 && ( undefined === limitToLine || limitToLine == line )) {
         				    speech += separator + '<emphasis>' + line + '</emphasis> nach ' + direction + (minutes < 1 ? ' sofort' : ' in <say-as interpret-as="time">' + minutes + '\'0"</say-as>');
         				    separator = ', ';
         				    lineCounter++;
@@ -84,7 +85,7 @@ var handlers = {
         			});
         			if(lineCounter===0) {
         			    speech = 'In der kommenden Stunde fahren keine Bahnen oder Busse.';
-        			    if(limitToLine>0) {
+        			    if(undefined !== limitToLine) {
         			        speech += ' Beschränkung auf Linie <emphasis>' + limitToLine + '</emphasis>';
         			    }
         			}
@@ -179,7 +180,7 @@ var handlers = {
         } else {
             // Indicate no slot to HelpIntent
             currentIntentSlot = null;
-            limitToLine = this.event.request.intent.slots.LINIE.value;
+            this.attributes['LimitToLine'] = this.event.request.intent.slots.LINIE.value;
             this.emit('ListStationsIntent');
         }
     },
