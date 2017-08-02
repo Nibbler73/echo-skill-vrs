@@ -224,6 +224,12 @@ var handlers = {
         }
         this.emit(':ask', help, help);
     },
+    'AMAZON.StopIntent': function() {
+        this.emit('AMAZON.CancelIntent');
+    },
+    'AMAZON.CancelIntent': function() {
+        this.emit(':tell', '<say-as interpret-as="interjection">tschö.</say-as>' );
+    },
     /*
      *
      */
